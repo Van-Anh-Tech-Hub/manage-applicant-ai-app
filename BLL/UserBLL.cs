@@ -1,42 +1,48 @@
-﻿using DAL;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using DTO;
+using DAL.Models;
+using DAL.Services;
 
 namespace BLL
 {
     public class UserBLL
     {
-        private readonly UserDAL _userDal;
-
+        private readonly UserService _userService;
         public UserBLL()
         {
-            _userDal = new UserDAL();
+            _userService = new UserService();
         }
 
-        public List<UserDTO> GetAllUsers()
+        public async Task<List<User>> GetUsers(
+            Expression<Func<User, bool>> filter = null,
+            Func<IQueryable<User>, IOrderedQueryable<User>> orderBy = null)
         {
-            return _userDal.GetAllUsers();
+            return await _userService.GetUsers(filter, orderBy);
         }
 
-        public void AddUser(UserDTO user)
+        public async Task<User> GetUser(Expression<Func<User, bool>> filter = null)
         {
-            // Add business logic (e.g., validate user)
-            _userDal.AddUser(user);
+            return await _userService.GetUser(filter);
         }
 
-        public void UpdateUser(string id, UserDTO user)
+        public async Task<User> CreateUser(User user)
         {
-            // Add business logic (e.g., check role, etc.)
-            _userDal.UpdateUser(id, user);
+            return await _userService.CreateUser(user);
         }
 
-        public void DeleteUser(string id)
+        public async Task<User> UpdateUser(string id, User updatedUser)
         {
-            _userDal.DeleteUser(id);
+            return await _userService.UpdateUser(id, updatedUser);
         }
+
+        public async Task<User> DeleteUser(string id)
+        {
+            return await _userService.DeleteUser(id);
+        }
+
     }
 }
