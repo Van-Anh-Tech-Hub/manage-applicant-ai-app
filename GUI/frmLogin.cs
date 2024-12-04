@@ -1,5 +1,6 @@
 ﻿using DAL.Models;
 using DAL.Services;
+using DAL.Types;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,7 +24,7 @@ namespace GUI
             DialogResult result = MessageBox.Show("Bạn muốn thoát?", "Thông Báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
             if (result == DialogResult.Yes)
-                Application.Exit();
+                System.Windows.Forms.Application.Exit();
         }
 
         private void txt_Username_Click(object sender, EventArgs e)
@@ -66,7 +67,7 @@ namespace GUI
                 User loggedInUser = new User
                 {
                     fullName = "Vũ văn Anh",
-                    role = DAL.E_Role.candidate
+                    role = E_Role.candidate
                 };
                 UserSession.LoggedInUser = loggedInUser;
 

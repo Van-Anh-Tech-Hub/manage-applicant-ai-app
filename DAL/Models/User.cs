@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DAL.Types;
 
 namespace DAL.Models
 {
@@ -12,7 +13,7 @@ namespace DAL.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string id { get; set; }
+        public string Id { get; set; }
         public string fullName { get; set; }
         public string email { get; set; }
         public string password { get; set; }

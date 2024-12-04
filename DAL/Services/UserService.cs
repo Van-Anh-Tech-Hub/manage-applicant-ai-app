@@ -62,12 +62,12 @@ namespace DAL.Services
 
         public async Task<User> UpdateUser(string id, User updatedUser)
         {
-            var existingUser = await _users.Find(u => u.id == id).FirstOrDefaultAsync();
+            var existingUser = await _users.Find(u => u.Id == id).FirstOrDefaultAsync();
 
             if (existingUser != null)
             {
-                updatedUser.id = id; 
-                await _users.ReplaceOneAsync(c => c.id == id, updatedUser);
+                updatedUser.Id = id; 
+                await _users.ReplaceOneAsync(c => c.Id == id, updatedUser);
                 return updatedUser;
             }
             else
@@ -78,11 +78,11 @@ namespace DAL.Services
 
         public async Task<User> DeleteUser(string id)
         {
-            var userToDelete = await _users.Find(u => u.id == id).FirstOrDefaultAsync();
+            var userToDelete = await _users.Find(u => u.Id == id).FirstOrDefaultAsync();
 
             if (userToDelete != null)
             {
-                await _users.DeleteOneAsync(c => c.id == id);
+                await _users.DeleteOneAsync(c => c.Id == id);
                 return userToDelete;
             }
             else

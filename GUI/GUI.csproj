@@ -36,6 +36,9 @@
     <Reference Include="BLL">
       <HintPath>..\BLL\bin\Debug\BLL.dll</HintPath>
     </Reference>
+    <Reference Include="ControlLib">
+      <HintPath>..\ControlLib\bin\Debug\ControlLib.dll</HintPath>
+    </Reference>
     <Reference Include="DAL">
       <HintPath>..\DAL\bin\Debug\DAL.dll</HintPath>
     </Reference>
