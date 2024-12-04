@@ -1,4 +1,5 @@
-﻿using DAL.Models;
+﻿using BLL;
+using DAL.Models;
 using DAL.Services;
 using DAL.Types;
 using System;
@@ -15,6 +16,7 @@ namespace GUI
 {
     public partial class frmLogin : Form
     {
+        private static UserBLL _userBLL = new UserBLL();
         public frmLogin()
         {
             InitializeComponent();
@@ -47,27 +49,26 @@ namespace GUI
         {
             try
             {
-                //    User loggedInUser = await userService.GetUser(u => u.Email == txt_Email.Text);
+                //User loggedInUser = await _userBLL.GetUser(u => u.email == txt_Email.Text);
 
-                //    if (loggedInUser == null)
-                //    {
-                //        MessageBox.Show("Email hoặc mật khẩu không đúng!!!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //        txt_Password.Text = string.Empty;
-                //        return;
-                //    }
-                //    bool isVerify = Helper.VerifyPassword(txt_Password.Text, loggedInUser?.Password);
+                //if (loggedInUser == null)
+                //{
+                //    MessageBox.Show("Email hoặc mật khẩu không đúng!!!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //    txt_Password.Text = string.Empty;
+                //    return;
+                //}
+                //bool isVerify = PasswordHasher.VerifyPassword(txt_Password.Text, loggedInUser.password);
 
-                //    if (!isVerify)
-                //    {
-                //        MessageBox.Show("Email hoặc mật khẩu không đúng!!!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //        txt_Password.Text = string.Empty;
-                //        return;
-                //    }
-
+                //if (!isVerify)
+                //{
+                //    MessageBox.Show("Email hoặc mật khẩu không đúng!!!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //    txt_Password.Text = string.Empty;
+                //    return;
+                //}
                 User loggedInUser = new User
                 {
-                    fullName = "Vũ văn Anh",
-                    role = E_Role.candidate
+                    email = "test@gmail.com",
+                    role = E_Role.admin
                 };
                 UserSession.LoggedInUser = loggedInUser;
 
