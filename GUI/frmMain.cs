@@ -42,8 +42,12 @@ namespace GUI
 
                 manageUser.Click += new EventHandler(ManageUsers_Click);
 
-                mainMenu.MenuItems.Add(manageUser);
+                MenuItem manageJob = new MenuItem("Quản lý nội dung công việc được đăng bở nhà tuyển dụng");
 
+                manageJob.Click += new EventHandler(ManageJob_Click);
+
+            mainMenu.MenuItems.Add(manageUser);
+            mainMenu.MenuItems.Add(manageJob);
             this.Menu = mainMenu;
         }
 
@@ -57,6 +61,26 @@ namespace GUI
             frm.Dock = DockStyle.Fill;
             frm.Show();
         }
+
+        private void ManageJob_Click(object sender, EventArgs e)
+        {
+            Form existingForm = this.MdiChildren.FirstOrDefault(f => f is frmManageJob);
+            if (existingForm != null)
+            {
+                existingForm.BringToFront();
+                return;
+            }
+
+            CloseAllChildForms();
+            frmManageJob frm = new frmManageJob();
+            frm.MdiParent = this;
+            frm.WindowState = FormWindowState.Maximized;
+            frm.FormBorderStyle = FormBorderStyle.None;
+            frm.Dock = DockStyle.Fill;
+            frm.Show();
+        }
+
+
         private void CloseAllChildForms()
         {
             foreach (Form childForm in this.MdiChildren)

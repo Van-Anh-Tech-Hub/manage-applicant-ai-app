@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace DAL.Models
 {
+    [BsonIgnoreExtraElements]
     public class JobCategory
     {
         [BsonId]
@@ -12,7 +13,7 @@ namespace DAL.Models
         [BsonElement("name")]
         public string Name { get; set; }
 
-        [BsonElement("isDel")]
+        [BsonElement("isDel")] // Sửa lại ánh xạ cho trường này
         public bool IsDel { get; set; }
 
         [BsonElement("__v")]
