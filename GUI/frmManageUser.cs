@@ -6,6 +6,8 @@ using DAL.Models;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using DAL.Services;
+using System.Linq.Expressions;
 
 namespace GUI
 {
@@ -26,6 +28,10 @@ namespace GUI
             candidateProfileCt.Visible = false;
             companyProfileCt.Visible = false;
 
+            ReloadDgvUser();
+        }
+        private async void ReloadDgvUser()
+        {
             List<User> users = await _userBLL.GetUsers();
             LoadDgvUser(users);
         }
@@ -109,7 +115,7 @@ namespace GUI
                     if (!String.IsNullOrEmpty(companyId))
                     {
                         Company company = await _companyBLL.GetCompany(c => c.Id == companyId);
-                        companyProfileCt.SetValues(company.Name, company.Description,company.Size,company.Field,company.Location.Address,company.Location.City,company.Location.Country);
+                        companyProfileCt.SetValues(company.Name, company.Description, company.Size, company.Field, company.Location.Address, company.Location.City, company.Location.Country);
                     }
                 }
                 if (role == E_Role.admin.ToString())
@@ -124,6 +130,154 @@ namespace GUI
         {
             candidateProfileCt.Visible = false;
             companyProfileCt.Visible = false;
+        }
+
+        private async void btnThem_Click(object sender, EventArgs e)
+        {
+            string fullName = txtFullName.Text;
+            string email = txtEmail.Text;
+            string password = txtPassword.Text;
+            E_Role role;
+            if (Enum.TryParse(cboRole.Text, out role))
+            {
+            }
+            else
+            {
+                MessageBox.Show("Invalid role selected.");
+                return;
+            }
+
+            User existingUser = await _userBLL.GetUser(u => u.email == email);
+
+            if (existingUser != null)
+            {
+                MessageBox.Show("Email này đã tồn tại!", "Trùng email", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            User newUse = new User
+            {
+                fullName = fullName,
+                email = email,
+                password = PasswordHasher.HashPassword(password),
+                role = role
+            };
+
+            User userCreated = await _userBLL.CreateUser(newUse);
+            if (userCreated != null)
+            {
+                MessageBox.Show("Thêm user thành công!", "Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ReloadDgvUser();
+            }
+        }
+
+        private async void btnXoa_Click(object sender, EventArgs e)
+        {
+            string userId = txtId.Text.Trim();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                MessageBox.Show("Vui lòng chọn user để xóa!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var confirmResult = MessageBox.Show("Bạn có chắc muốn xóa user này không?", "Xác Nhận Xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (confirmResult == DialogResult.Yes)
+            {
+                await _userBLL.DeleteUser(userId);
+                MessageBox.Show("Xóa xe thành công!", "Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ReloadDgvUser();
+            }
+        }
+
+        private async void btnSua_Click(object sender, EventArgs e)
+        {
+            string id = txtId.Text;
+            string fullName = txtFullName.Text;
+            string email = txtEmail.Text;
+            string password = txtPassword.Text;
+            bool isPasswordChange = false;
+            E_Role role;
+
+            if (Enum.TryParse(cboRole.Text, out role))
+            {
+            }
+            else
+            {
+                MessageBox.Show("Invalid role selected.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(id))
+            {
+                MessageBox.Show("Vui lòng chọn xe để sửa!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var confirmResult = MessageBox.Show("Bạn có chắc muốn cập nhật user này không?", "Xác Nhận Sửa", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (confirmResult == DialogResult.Yes)
+            {
+                User existingUser = await _userBLL.GetUser(u => u.Id == id);
+
+                if (existingUser == null)
+                {
+                    MessageBox.Show("Không tìm thấy user!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                if (existingUser.email != email)
+                {
+                    User userWithSameEmail = await _userBLL.GetUser(u => u.email == email);
+
+                    if (userWithSameEmail != null)
+                    {
+                        MessageBox.Show("Email đã tồn tại!", "Trùng email", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+
+                if (existingUser.password != password)
+                {
+                    isPasswordChange = true;
+                }
+
+                User updatedUser = new User
+                {
+                    fullName = fullName,
+                    email = email,
+                    role = role
+                };
+
+                if (isPasswordChange)
+                {
+                    updatedUser.password = PasswordHasher.HashPassword(password);
+                }
+
+                // Update the user in the database
+                await _userBLL.UpdateUser(id, updatedUser);
+                MessageBox.Show("Sửa user thành công!", "Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ReloadDgvUser();
+            }
+        }
+
+        private async void btnSearch_Click(object sender, EventArgs e)
+        {
+            string fullName = txtSearchHoTen.Text;
+            string email = txtSearchEmail.Text;
+
+            Expression<Func<User, bool>> filter = user =>
+            (string.IsNullOrEmpty(fullName) || user.fullName.Contains(fullName)) &&
+            (string.IsNullOrEmpty(email) || user.email.Contains(email));
+
+            List<User> users = await _userBLL.GetUsers(filter);
+            LoadDgvUser(users);
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            ReloadDgvUser();
         }
     }
 }
