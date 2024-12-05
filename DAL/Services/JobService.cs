@@ -43,17 +43,21 @@ namespace DAL.Services
         {
             try
             {
-                // Tìm công việc theo ID
+                if (!ObjectId.TryParse(jobId, out _))
+                {
+                    throw new ArgumentException("Job ID is not a valid ObjectId.");
+                }
+
                 var job = await _jobs.Find(j => j.Id == jobId && !j.IsDel).FirstOrDefaultAsync();
                 return job;
             }
             catch (Exception ex)
             {
-                // Log lỗi và xử lý
                 Console.WriteLine($"Error fetching job by ID: {ex.Message}");
                 return null;
             }
         }
+
 
         public async Task<Job> DeleteJob(string id)
         {

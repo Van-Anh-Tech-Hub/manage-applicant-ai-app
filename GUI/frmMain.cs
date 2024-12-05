@@ -42,7 +42,7 @@ namespace GUI
 
                 manageUser.Click += new EventHandler(ManageUsers_Click);
 
-                MenuItem manageJob = new MenuItem("Quản lý nội dung công việc được đăng bở nhà tuyển dụng");
+                MenuItem manageJob = new MenuItem("Quản lý nội dung công việc được đăng bởi nhà tuyển dụng");
 
                 manageJob.Click += new EventHandler(ManageJob_Click);
 

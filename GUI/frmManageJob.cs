@@ -26,12 +26,20 @@ namespace GUI
             _jobBLL = new JobBLL();
             _jobCategoryBLL = new JobCategoryBLL();
             _jobTypeBLL = new JobTypeBLL();
+            this.MinimumSize = new Size(800, 600); 
+            this.Resize += frmManageJob_Resize;
             LoadData();
         }
 
+        private void frmManageJob_Resize(object sender, EventArgs e)
+        {
+            dataGridView1.Width = this.ClientSize.Width - 20; 
+            dataGridView1.Height = this.ClientSize.Height - 150; 
+        }
+
+
         private async void LoadData()
         {
-            await LoadCities();
             await LoadCategories();
         }
 
@@ -40,34 +48,12 @@ namespace GUI
             await LoadJobs(isDeleted: false);
         }
 
-        private async Task LoadCities()
-        {
-            var apiClient = new HttpClient();
-            var response = await apiClient.GetStringAsync("https://provinces.open-api.vn/api/?depth=2");
-
-            if (string.IsNullOrEmpty(response))
-            {
-                MessageBox.Show("Không nhận được dữ liệu từ API.");
-                return;
-            }
-
-            var cities = System.Text.Json.JsonSerializer.Deserialize<List<City>>(response);
-
-            if (cities != null && cities.Count > 0)
-            {
-                cbxThanhPho.DataSource = cities;
-                cbxThanhPho.DisplayMember = "Name";
-                cbxThanhPho.ValueMember = "Code";
-            }
-            else
-            {
-                MessageBox.Show("Không có dữ liệu thành phố.");
-            }
-        }
+      
 
         private async Task LoadCategories()
         {
             var categories = await _jobCategoryBLL.GetJobCategories(c => !c.IsDel);
+            categories.Insert(0, new JobCategory { Id = string.Empty, Name = "Xem tất cả" });
             cbxDanhMuc.DataSource = categories;
             cbxDanhMuc.DisplayMember = "Name";
             cbxDanhMuc.ValueMember = "Id";
@@ -86,19 +72,41 @@ namespace GUI
                 job.Headcount,
                 job.CreatedAt
             }).ToList();
+
+            dataGridView1.Columns["Id"].Visible = false;
+            dataGridView1.Columns["Title"].HeaderText = "Tiêu đề";
+            dataGridView1.Columns["Salary"].HeaderText = "Lương";
+            dataGridView1.Columns["Deadline"].HeaderText = "Hạn chót";
+            dataGridView1.Columns["Headcount"].HeaderText = "Số lượng tuyển";
+            dataGridView1.Columns["CreatedAt"].HeaderText = "Ngày tạo";
+
+            foreach (DataGridViewColumn column in dataGridView1.Columns)
+            {
+                column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            dataGridView1.DefaultCellStyle.BackColor = Color.White;
+            dataGridView1.DefaultCellStyle.ForeColor = Color.Black;
+            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
+
+            dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.Navy;
+            dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridView1.EnableHeadersVisualStyles = false;
         }
+
 
 
         private async void btnSearch_Click(object sender, EventArgs e)
         {
             string title = txtJob.Text.Trim();
             string categoryId = cbxDanhMuc.SelectedValue?.ToString();
-            string locationId = cbxThanhPho.SelectedValue?.ToString();
 
             var jobs = await _jobBLL.GetJobs(
                 job => (string.IsNullOrEmpty(title) || job.Title.Contains(title)) &&
-                       (string.IsNullOrEmpty(categoryId) || job.CategoryId == categoryId) &&
-                       (string.IsNullOrEmpty(locationId) || job.LocationId == locationId)
+                       (string.IsNullOrEmpty(categoryId) || job.CategoryId == categoryId || string.IsNullOrEmpty(job.CategoryId))
             );
 
             dataGridView1.DataSource = jobs.Select(job => new
@@ -122,11 +130,6 @@ namespace GUI
             }
         }
 
-        public class City
-        {
-            public int Code { get; set; }
-            public string Name { get; set; }
-        }
 
         private async void btnDeleteJob_Click(object sender, EventArgs e)
         {
