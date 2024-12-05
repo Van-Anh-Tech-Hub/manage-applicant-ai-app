@@ -46,8 +46,12 @@ namespace GUI
 
                 manageJob.Click += new EventHandler(ManageJob_Click);
 
+                MenuItem manageCompany = new MenuItem("Quản lý thông tin công ty");
+                manageCompany.Click += new EventHandler(ManageCompany_Click);
+
             mainMenu.MenuItems.Add(manageUser);
             mainMenu.MenuItems.Add(manageJob);
+            mainMenu.MenuItems.Add(manageCompany);
             this.Menu = mainMenu;
         }
 
@@ -80,6 +84,17 @@ namespace GUI
             frm.Show();
         }
 
+        private void ManageCompany_Click(object sender, EventArgs e)
+        {
+            CloseAllChildForms();
+            frmManageCompany frm = new frmManageCompany();
+            frm.MdiParent = this;
+            frm.WindowState = FormWindowState.Maximized;
+            frm.FormBorderStyle = FormBorderStyle.None;
+            frm.Dock = DockStyle.Fill;
+            frm.Show();
+        }
+
 
         private void CloseAllChildForms()
         {
@@ -87,6 +102,11 @@ namespace GUI
             {
                 childForm.Close();
             }
+        }
+
+        private void frmMain_Load_1(object sender, EventArgs e)
+        {
+
         }
     }
 }
